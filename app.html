@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quiz do Amor e Proposta! ❤️</title>
+<meta charset="UTF-8">
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7e6f8; /* Rosa claro */
+    margin: 0;
+    overflow: hidden; /* Importante para o botão não sair da tela inteira */
+    color: #333;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    transform: scale(0.9);
+    opacity: 0;
+    animation: fadeInScale 1s forwards ease-out;
+  }
+  @keyframes fadeInScale {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  h1 {
+    color: #ff69b4;
+    margin-bottom: 25px;
+    font-size: 2.4em;
+  }
+  .question-text {
+    font-size: 1.6em;
+    margin-bottom: 30px;
+    min-height: 50px;
+    color: #555;
+  }
+  .options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  .option-button {
+    background-color: #ffe0f0;
+    color: #ff69b4;
+    padding: 15px 20px;
+    border: 2px solid #ff69b4;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .option-button:hover {
+    background-color: #ff69b4;
+    color: white;
+    transform: translateY(-2px);
+  }
+  /* Estilo para botão incorreto */
+  .option-button.incorrect {
+    background-color: #ffcccc; /* Vermelho claro */
+    border-color: #e74c3c; /* Vermelho mais forte */
+    animation: shakeButton 0.5s ease-in-out; /* Animação de balanço */
+  }
+  @keyframes shakeButton {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+
+  .feedback-message {
+    color: #e74c3c; /* Vermelho para erro */
+    font-weight: bold;
+    margin-top: -15px;
+    margin-bottom: 15px;
+    opacity: 0; /* Começa invisível */
+    transition: opacity 0.3s ease-in-out;
+  }
+  .feedback-message.show {
+      opacity: 1; /* Torna visível */
+  }
+  h2 {
+    font-size: 45px; /* Tamanho ajustado para o título da surpresa */
+  }
+
+  /* Estilos para a primeira surpresa após o quiz */
+  .final-surprise {
+    font-size: 2em;
+    color: #8a2be2;
+    margin-top: 30px;
+    display: none; /* Escondido por padrão */
+    opacity: 0;
+    animation: fadeIn 2s forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .final-surprise img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .secret-button {
+    background-color: #ffc107; /* Amarelo */
+    color: #333;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  .secret-button:hover {
+    background-color: #ffb300;
+    transform: translateY(-2px);
+  }
+
+  /* Estilos para o modal da pergunta "Quer casar comigo?" */
+  .proposal-modal {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo escuro transparente */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Acima de tudo */
+  }
+  .proposal-content {
+    background-color: white;
+    padding: 50px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    position: relative; /* Para os botões se posicionarem dentro dele */
+    max-width: 500px;
+    width: 90%;
+    min-height: 300px; /* Garante espaço para o 'NÃO' andar */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Importante para o botão não sair do modal */
+  }
+  .proposal-content h3 {
+    font-size: 3em;
+    color: #8a2be2; /* Roxo */
+    margin-bottom: 40px;
+  }
+  .proposal-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centraliza verticalmente os botões */
+    width: 100%;
+    position: relative; /* Pai para o botão 'Não' absoluto */
+    height: 150px; /* Altura fixa para o movimento do botão NÃO */
+  }
+  .proposal-button {
+    padding: 18px 40px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1.8em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 2; /* Garante que os botões fiquem sobre outros elementos no modal */
+  }
+  .proposal-button.yes {
+    background-color: #28a745; /* Verde */
+    color: white;
+    /* Posição fixa dentro do flex container */
+    margin-right: 40px; /* Espaço para o botão NÃO */
+  }
+  .proposal-button.yes:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+  }
+  .proposal-button.no {
+    background-color: #dc3545; /* Vermelho */
+    color: white;
+    position: absolute; /* Essencial para o movimento */
+    /* Posição inicial: Será definida via JS, mas aqui está a transição */
+    transition: left 0.3s ease-out, top 0.3s ease-out; /* Suaviza o movimento */
+    z-index: 1; /* Para o SIM ficar por cima se eles se cruzarem */
+  }
+  .proposal-button.no:hover {
+    background-color: #c82333;
+  }
+
+  /* Mensagem final após aceitar a proposta */
+  .accepted-proposal-message {
+    font-size: 2.5em;
+    color: #8a2be2;
+    margin-top: 50px;
+    display: none; /* Escondido por padrão */
+    opacity: 0;
+    animation: fadeIn 2s forwards;
+  }
+  .accepted-proposal-message img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+</style>
+</head>
+<body>
+  <div class="container" id="mainContainer">
+    <h1>Quiz do Amor! ❤️</h1>
+    <div class="quiz-area" id="quizArea">
+      <p class="question-text" id="questionText"></p>
+      <div class="options-container" id="optionsContainer">
+        </div>
+      <p class="feedback-message" id="feedbackMessage"></p>
+    </div>
+
+    <div class="final-surprise" id="surpriseMessage">
+      <h2>🎉 Parabéns, meu amor! 🎉</h2>
+      <p>Você é incrível e meu amor por você é a maior das minhas certezas!</p>
+      <p>Obrigado por ser a minha melhor pessoa e namorada do MUNDO!</p>
+      <img src="https://gifman.net/wp-content/uploads/2019/06/ursinhos-fofos-apaixonados.gif" alt="Surpresa!">
+      <p>Eu te amo muito!</p>
+      <button class="secret-button" id="finalSecretButton">Clique para a Surpresa Final!</button>
+    </div>
+  </div>
+
+  <div class="proposal-modal" id="proposalModal">
+    <div class="proposal-content" id="proposalContent">
+      <h3>Quer casar comigo? 💍</h3>
+      <div class="proposal-buttons">
+        <button class="proposal-button yes" id="yesButton">SIM!</button>
+        <button class="proposal-button no" id="noButton">NÃO</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="accepted-proposal-message" id="acceptedProposalMessage">
+    </div>
+
+
+  <script>
+    const questions = [
+      {
+        question: "Quando foi nosso primeiro beijo?",
+        options: ["04/09/2020", "04/09/2019", "09/04/2020", "26/09/2020"],
+        correctAnswer: "04/09/2020"
+      },
+      {
+        question: "Qual lugar você sonha em visitar comigo um dia?",
+        options: ["Chile", "Todos os lugares do mundo!", "Morro do Dendê", "Espaço sideral🚀"],
+        correctAnswer: "Todos os lugares do mundo!"
+      },
+      {
+        question: "Qual o seu hobbie favorito que você ama compartilhar comigo?",
+        options: ["Assistir séries/filmes juntinhos", "Cozinhar/comer coisas gostosas", "Sair para explorar a natureza", "Todos os itens acima!"],
+        correctAnswer: "Todos os itens acima!"
+      },
+      {
+        question: "Qual foi o primeiro apelido carinhoso que eu te dei? Nível Hard 🔥",
+        options: ["Amor", "Vida", "Neném", "Princesa"],
+        correctAnswer: "Neném"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    const userSelectedAnswers = [];
+
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const quizArea = document.getElementById('quizArea');
+    const surpriseMessage = document.getElementById('surpriseMessage'); // Primeira surpresa
+    const feedbackMessage = document.getElementById('feedbackMessage');
+    const finalSecretButton = document.getElementById('finalSecretButton'); // Botão para a segunda surpresa
+    const proposalModal = document.getElementById('proposalModal'); // Modal da proposta
+    const proposalContent = document.getElementById('proposalContent'); // Conteúdo do modal
+    const yesButton = document.getElementById('yesButton');
+    const noButton = document.getElementById('noButton');
+    const acceptedProposalMessage = document.getElementById('acceptedProposalMessage'); // Mensagem final após SIM
+
+    function displayQuestion() {
+      if (currentQuestionIndex < questions.length) {
+        const currentQuestion = questions[currentQuestionIndex];
+        questionText.textContent = currentQuestion.question;
+        optionsContainer.innerHTML = '';
+        feedbackMessage.classList.remove('show');
+
+        currentQuestion.options.forEach(option => {
+          const button = document.createElement('button');
+          button.classList.add('option-button');
+          button.textContent = option;
+          button.addEventListener('click', () => selectAnswer(option, currentQuestion.correctAnswer, button));
+          optionsContainer.appendChild(button);
+        });
+      } else {
+        // Todas as perguntas respondidas, exibe a primeira surpresa!
+        quizArea.style.display = 'none';
+        surpriseMessage.style.display = 'block';
+      }
+    }
+
+    function selectAnswer(selectedOption, correctAnswer, clickedButton) {
+      if (selectedOption === correctAnswer) {
+        userSelectedAnswers.push({
+          question: questions[currentQuestionIndex].question,
+          answer: selectedOption,
+          correct: true
+        });
+        currentQuestionIndex++;
+        feedbackMessage.classList.remove('show');
+        displayQuestion();
+      } else {
+        feedbackMessage.textContent = 'Ops! Essa não é a resposta. Tente de novo! 😉';
+        feedbackMessage.classList.add('show');
+
+        clickedButton.classList.add('incorrect');
+        setTimeout(() => {
+          clickedButton.classList.remove('incorrect');
+        }, 500);
+      }
+    }
+
+    // Lógica para o botão "Surpresa Final!"
+    finalSecretButton.addEventListener('click', () => {
+      proposalModal.style.display = 'flex'; // Mostra o modal
+      // Posiciona o botão "NÃO" corretamente ao abrir o modal
+      setInitialNoButtonPosition();
+    });
+
+    // Lógica para o botão "NÃO" fugir de forma suave e dentro dos limites
+    noButton.addEventListener('mouseover', () => {
+      // Pega as dimensões da área do conteúdo do modal (onde o botão deve se mover)
+      const contentRect = proposalContent.getBoundingClientRect();
+      const buttonRect = noButton.getBoundingClientRect();
+
+      // Calcula os limites de movimento para o botão dentro do contentRect
+      // Considera o padding do proposal-content e o tamanho do próprio botão
+      const padding = 20; // Margem para o botão não colar nas bordas do modal
+      const minX = padding;
+      const minY = padding;
+      const maxX = contentRect.width - buttonRect.width - padding;
+      const maxY = contentRect.height - buttonRect.height - padding;
+      
+      // Gera novas posições aleatórias dentro desses limites
+      // Garante que newX/newY estejam entre minX/minY e maxX/maxY
+      const newX = Math.random() * (maxX - minX) + minX;
+      const newY = Math.random() * (maxY - minY) + minY;
+
+      // Aplica as novas posições como 'left' e 'top'
+      noButton.style.left = `${newX}px`;
+      noButton.style.top = `${newY}px`;
+      noButton.style.transform = 'none'; // Garante que a transição de left/top funcione
+    });
+
+    // Lógica para o botão "SIM!"
+    yesButton.addEventListener('click', () => {
+      // Esconde o modal da proposta
+      proposalModal.style.display = 'none';
+      // Esconde a primeira surpresa (opcional, se quiser uma transição mais limpa)
+      surpriseMessage.style.display = 'none';
+
+      // Mostra a mensagem final de aceitação
+      acceptedProposalMessage.innerHTML = `
+        <h2>🎉 SIIIIM! 🎉</h2>
+        <p>Você é a pessoa mais incrível e me faz a pessoa mais feliz do mundo!</p>
+        <p>Mal posso esperar pelo nosso futuro juntos! ❤️</p>
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdDVxZm1iNTk1MnR3bTgyZm5iN3g0Y2U1NXJ4ZW1wY2R6OW9pM2Q1YSZlcD12MV9pbnRlcm5hbF9naWZfY3V0ZmlsZSZjdD1n/l2SpQ18h2L3E8652A/giphy.gif" alt="Casamento!">
+        <p>EU TE AMO DEMAIS!</p>
+      `;
+      acceptedProposalMessage.style.display = 'block';
+      acceptedProposalMessage.style.opacity = 1; // Ativa o fade-in
+    });
+
+    // Função para posicionar o botão "NÃO" inicialmente no centro-direito do modal
+    function setInitialNoButtonPosition() {
+        const contentRect = proposalContent.getBoundingClientRect();
+        const buttonRect = noButton.getBoundingClientRect();
+
+        // Posição inicial no centro do modal, à direita do que seria o botão "SIM"
+        // (SIM está centralizado, então posicionamos o NÃO com um offset)
+        const initialLeft = (contentRect.width / 2) + 20; // 20px para ter um espaço do SIM
+        const initialTop = (contentRect.height / 2);
+
+        noButton.style.transition = 'none'; // Desabilita transição para o reset inicial
+        noButton.style.left = `${initialLeft - (buttonRect.width / 2)}px`; // Ajusta para o centro do botão
+        noButton.style.top = `${initialTop - (buttonRect.height / 2)}px`; // Ajusta para o centro do botão
+        noButton.style.transform = 'none'; // Remove transform para usar left/top diretos
+        void noButton.offsetWidth; // Força o reflow para aplicar as mudanças imediatamente
+        noButton.style.transition = 'left 0.3s ease-out, top 0.3s ease-out'; // Reabilita transição
+    }
+
+    // Inicia o quiz quando a página carrega
+    displayQuestion();
+  </script>
+</body>
+</html>
