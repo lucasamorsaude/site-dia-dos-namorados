@@ -242,7 +242,6 @@
       <p>Obrigado por ser a minha melhor pessoa e namorada do MUNDO!</p>
       <img src="https://gifman.net/wp-content/uploads/2019/06/ursinhos-fofos-apaixonados.gif" alt="Surpresa!">
       <p>Eu te amo muito!</p>
-      <button class="secret-button" id="finalSecretButton">Clique para a Surpresa Final!</button>
     </div>
   </div>
 
@@ -292,12 +291,8 @@
     const quizArea = document.getElementById('quizArea');
     const surpriseMessage = document.getElementById('surpriseMessage'); // Primeira surpresa
     const feedbackMessage = document.getElementById('feedbackMessage');
-    const finalSecretButton = document.getElementById('finalSecretButton'); // Botão para a segunda surpresa
-    const proposalModal = document.getElementById('proposalModal'); // Modal da proposta
-    const proposalContent = document.getElementById('proposalContent'); // Conteúdo do modal
-    const yesButton = document.getElementById('yesButton');
-    const noButton = document.getElementById('noButton');
-    const acceptedProposalMessage = document.getElementById('acceptedProposalMessage'); // Mensagem final após SIM
+
+    
 
     function displayQuestion() {
       if (currentQuestionIndex < questions.length) {
@@ -341,74 +336,11 @@
       }
     }
 
-    // Lógica para o botão "Surpresa Final!"
-    finalSecretButton.addEventListener('click', () => {
-      proposalModal.style.display = 'flex'; // Mostra o modal
-      // Posiciona o botão "NÃO" corretamente ao abrir o modal
-      setInitialNoButtonPosition();
-    });
+  
 
-    // Lógica para o botão "NÃO" fugir de forma suave e dentro dos limites
-    noButton.addEventListener('mouseover', () => {
-      // Pega as dimensões da área do conteúdo do modal (onde o botão deve se mover)
-      const contentRect = proposalContent.getBoundingClientRect();
-      const buttonRect = noButton.getBoundingClientRect();
 
-      // Calcula os limites de movimento para o botão dentro do contentRect
-      // Considera o padding do proposal-content e o tamanho do próprio botão
-      const padding = 20; // Margem para o botão não colar nas bordas do modal
-      const minX = padding;
-      const minY = padding;
-      const maxX = contentRect.width - buttonRect.width - padding;
-      const maxY = contentRect.height - buttonRect.height - padding;
-      
-      // Gera novas posições aleatórias dentro desses limites
-      // Garante que newX/newY estejam entre minX/minY e maxX/maxY
-      const newX = Math.random() * (maxX - minX) + minX;
-      const newY = Math.random() * (maxY - minY) + minY;
 
-      // Aplica as novas posições como 'left' e 'top'
-      noButton.style.left = `${newX}px`;
-      noButton.style.top = `${newY}px`;
-      noButton.style.transform = 'none'; // Garante que a transição de left/top funcione
-    });
-
-    // Lógica para o botão "SIM!"
-    yesButton.addEventListener('click', () => {
-      // Esconde o modal da proposta
-      proposalModal.style.display = 'none';
-      // Esconde a primeira surpresa (opcional, se quiser uma transição mais limpa)
-      surpriseMessage.style.display = 'none';
-
-      // Mostra a mensagem final de aceitação
-      acceptedProposalMessage.innerHTML = `
-        <h2>🎉 SIIIIM! 🎉</h2>
-        <p>Você é a pessoa mais incrível e me faz a pessoa mais feliz do mundo!</p>
-        <p>Mal posso esperar pelo nosso futuro juntos! ❤️</p>
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdDVxZm1iNTk1MnR3bTgyZm5iN3g0Y2U1NXJ4ZW1wY2R6OW9pM2Q1YSZlcD12MV9pbnRlcm5hbF9naWZfY3V0ZmlsZSZjdD1n/l2SpQ18h2L3E8652A/giphy.gif" alt="Casamento!">
-        <p>EU TE AMO DEMAIS!</p>
-      `;
-      acceptedProposalMessage.style.display = 'block';
-      acceptedProposalMessage.style.opacity = 1; // Ativa o fade-in
-    });
-
-    // Função para posicionar o botão "NÃO" inicialmente no centro-direito do modal
-    function setInitialNoButtonPosition() {
-        const contentRect = proposalContent.getBoundingClientRect();
-        const buttonRect = noButton.getBoundingClientRect();
-
-        // Posição inicial no centro do modal, à direita do que seria o botão "SIM"
-        // (SIM está centralizado, então posicionamos o NÃO com um offset)
-        const initialLeft = (contentRect.width / 2) + 20; // 20px para ter um espaço do SIM
-        const initialTop = (contentRect.height / 2);
-
-        noButton.style.transition = 'none'; // Desabilita transição para o reset inicial
-        noButton.style.left = `${initialLeft - (buttonRect.width / 2)}px`; // Ajusta para o centro do botão
-        noButton.style.top = `${initialTop - (buttonRect.height / 2)}px`; // Ajusta para o centro do botão
-        noButton.style.transform = 'none'; // Remove transform para usar left/top diretos
-        void noButton.offsetWidth; // Força o reflow para aplicar as mudanças imediatamente
-        noButton.style.transition = 'left 0.3s ease-out, top 0.3s ease-out'; // Reabilita transição
-    }
+  
 
     // Inicia o quiz quando a página carrega
     displayQuestion();
